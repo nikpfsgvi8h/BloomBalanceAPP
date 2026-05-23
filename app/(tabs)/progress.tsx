@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,85 +12,126 @@ import {
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {
-  LineChart,
-} from "react-native-chart-kit";
-
-import {
-  AnimatedCircularProgress,
-} from "react-native-circular-progress";
-
-const screenWidth =
-  Dimensions.get("window").width;
-
-const aiInsights = [
-
-  "Your recovery levels are improving steadily 🌸",
-
-  "Consistency matters more than intensity today 💪",
-
-  "Your cycle phase suggests prioritizing mobility and recovery 🧘",
-
-  "Energy trends indicate improved workout readiness ⚡",
-
-  "Your wellness balance is becoming more stable 💖",
-
-];
-
 export default function ProgressScreen() {
 
   const [streak, setStreak] =
     useState(0);
 
-  const [goal, setGoal] =
+  const [phase, setPhase] =
     useState("");
 
-  const [energy, setEnergy] =
-    useState("");
-
-  const [focus, setFocus] =
+  const [userName, setUserName] =
     useState("");
 
   useEffect(() => {
 
-    loadData();
+    loadProgress();
 
   }, []);
 
-  const loadData = async () => {
+  const loadProgress =
+    async () => {
 
-    const savedStreak =
-      await AsyncStorage.getItem(
-        "streak"
-      );
+      try {
 
-    const savedUser =
-      await AsyncStorage.getItem(
-        "userData"
-      );
+        const savedStreak =
+          await AsyncStorage.getItem(
+            "streak"
+          );
 
-    if (savedStreak) {
+        if (savedStreak) {
 
-      setStreak(
-        Number(savedStreak)
-      );
+          setStreak(
+            parseInt(savedStreak)
+          );
 
-    }
+        }
 
-    if (savedUser) {
+        const savedUser =
+          await AsyncStorage.getItem(
+            "userData"
+          );
 
-      const parsedUser =
-        JSON.parse(savedUser);
+        if (!savedUser) return;
 
-      setGoal(parsedUser.goal);
+        const user =
+          JSON.parse(savedUser);
 
-      setEnergy(parsedUser.energy);
+        setUserName(
+          user.name
+        );
 
-      setFocus(parsedUser.focus);
+        const today =
+          new Date();
 
-    }
+        const start =
+          new Date(
+            user.cycleStartDate
+          );
 
-  };
+        const difference =
+          Math.floor(
+
+            (
+              today.getTime()
+              -
+              start.getTime()
+            )
+
+            /
+
+            (1000 * 60 * 60 * 24)
+
+          );
+
+        const cycleDay =
+          (difference % 28) + 1;
+
+        if (cycleDay <= 5) {
+
+          setPhase(
+            "Menstrual 🌸"
+          );
+
+        }
+
+        else if (
+          cycleDay <= 13
+        ) {
+
+          setPhase(
+            "Follicular ⚡"
+          );
+
+        }
+
+        else if (
+          cycleDay <= 16
+        ) {
+
+          setPhase(
+            "Ovulation 🔥"
+          );
+
+        }
+
+        else {
+
+          setPhase(
+            "Luteal 🌙"
+          );
+
+        }
+
+      }
+
+      catch (error) {
+
+        console.log(error);
+
+      }
+
+    };
 
   return (
 
@@ -99,7 +139,7 @@ export default function ProgressScreen() {
       style={styles.container}
 
       contentContainerStyle={{
-        paddingBottom: 60,
+        paddingBottom: 80,
       }}
 
       showsVerticalScrollIndicator={
@@ -108,221 +148,51 @@ export default function ProgressScreen() {
     >
 
       <Text style={styles.heading}>
-        Your Wellness Progress 🌸
+        Your Progress 🌸
       </Text>
 
-      <View style={styles.mainCard}>
+      <Text style={styles.subheading}>
+        Keep showing up consistently.
+        Your wellness journey matters.
+      </Text>
 
-        <Text style={styles.cardTitle}>
-          Current Streak 🔥
+      <View style={styles.streakCard}>
+
+        <Text style={styles.cardLabel}>
+          Workout Streak
         </Text>
 
-        <Text style={styles.bigText}>
-          {streak} Days
-        </Text>
-
-      </View>
-
-      <View style={styles.card}>
-
-        <Text style={styles.cardTitle}>
-          Fitness Goal 🎯
-        </Text>
-
-        <Text style={styles.cardText}>
-          {goal}
+        <Text style={styles.streakText}>
+          {streak} Days 🔥
         </Text>
 
       </View>
 
-      <View style={styles.card}>
+      <View style={styles.phaseCard}>
 
-        <Text style={styles.cardTitle}>
-          Focus Area 💪
+        <Text style={styles.cardLabel}>
+          Current Phase
         </Text>
 
-        <Text style={styles.cardText}>
-          {focus}
-        </Text>
-
-      </View>
-
-      <View style={styles.card}>
-
-        <Text style={styles.cardTitle}>
-          Energy Level ⚡
-        </Text>
-
-        <Text style={styles.cardText}>
-          {energy}
+        <Text style={styles.phaseText}>
+          {phase}
         </Text>
 
       </View>
 
-      <View style={styles.aiCard}>
+      <View style={styles.insightCard}>
 
-        <Text style={styles.aiTitle}>
-          AI Wellness Insights 🧠
+        <Text style={styles.cardLabel}>
+          Wellness Insight
         </Text>
 
-        {aiInsights.map(
-          (item, index) => (
+        <Text style={styles.insightText}>
 
-            <View
-              key={index}
-              style={styles.insightBubble}
-            >
+          {userName
+            ? `${userName}, your consistency is building healthier habits every day.`
+            : "Your consistency is building healthier habits every day."}
 
-              <Text
-                style={styles.insightText}
-              >
-                {item}
-              </Text>
-
-            </View>
-
-          )
-        )}
-
-      </View>
-
-      <View style={styles.scoreContainer}>
-
-        <Text style={styles.scoreTitle}>
-          Wellness Scores 🌸
         </Text>
-
-        <View style={styles.scoreRow}>
-
-          <View style={styles.scoreItem}>
-
-            <AnimatedCircularProgress
-              size={120}
-              width={12}
-              fill={82}
-              tintColor="#FF6F91"
-              backgroundColor="#1A1A1A"
-              rotation={0}
-            >
-
-              {() => (
-                <Text style={styles.scoreText}>
-                  82%
-                </Text>
-              )}
-
-            </AnimatedCircularProgress>
-
-            <Text style={styles.scoreLabel}>
-              Recovery
-            </Text>
-
-          </View>
-
-          <View style={styles.scoreItem}>
-
-            <AnimatedCircularProgress
-              size={120}
-              width={12}
-              fill={74}
-              tintColor="#C77DFF"
-              backgroundColor="#1A1A1A"
-              rotation={0}
-            >
-
-              {() => (
-                <Text style={styles.scoreText}>
-                  74%
-                </Text>
-              )}
-
-            </AnimatedCircularProgress>
-
-            <Text style={styles.scoreLabel}>
-              Energy
-            </Text>
-
-          </View>
-
-        </View>
-
-      </View>
-
-      <View style={styles.chartCard}>
-
-        <Text style={styles.chartTitle}>
-          Wellness Trends 📈
-        </Text>
-
-        <LineChart
-
-          data={{
-
-            labels: [
-              "Mon",
-              "Tue",
-              "Wed",
-              "Thu",
-              "Fri",
-            ],
-
-            datasets: [
-              {
-                data: [
-                  40,
-                  55,
-                  70,
-                  75,
-                  95,
-                ],
-              },
-            ],
-          }}
-
-          width={screenWidth - 48}
-
-          height={240}
-
-          yAxisSuffix="%"
-
-          chartConfig={{
-
-            backgroundColor:
-              "#050505",
-
-            backgroundGradientFrom:
-              "#1A1024",
-
-            backgroundGradientTo:
-              "#24112E",
-
-            decimalPlaces: 0,
-
-            color: (
-              opacity = 1
-            ) =>
-              `rgba(255,111,145,${opacity})`,
-
-            labelColor: (
-              opacity = 1
-            ) =>
-              `rgba(255,255,255,${opacity})`,
-
-            propsForDots: {
-              r: "6",
-              strokeWidth: "2",
-              stroke: "#FF6F91",
-            },
-          }}
-
-          bezier
-
-          style={{
-            marginTop: 20,
-            borderRadius: 24,
-          }}
-
-        />
 
       </View>
 
@@ -335,211 +205,104 @@ export default function ProgressScreen() {
 const styles = StyleSheet.create({
 
   container: {
+
     flex: 1,
+
     backgroundColor: "#050505",
+
     paddingTop: 70,
+
     paddingHorizontal: 24,
   },
 
   heading: {
+
     color: "#FFFFFF",
-    fontSize: 34,
+
+    fontSize: 36,
+
     fontWeight: "bold",
-    marginBottom: 30,
+
+    marginBottom: 14,
   },
 
-  mainCard: {
+  subheading: {
 
-    backgroundColor:
-      "#FF6F91",
+    color: "#B0B0B0",
+
+    fontSize: 17,
+
+    lineHeight: 28,
+
+    marginBottom: 34,
+  },
+
+  streakCard: {
+
+    backgroundColor: "#1A1024",
 
     borderRadius: 30,
 
     padding: 30,
 
     marginBottom: 24,
-
-    alignItems: "center",
   },
 
-  bigText: {
-    color: "#FFFFFF",
-    fontSize: 46,
-    fontWeight: "bold",
-    marginTop: 10,
+  phaseCard: {
+
+    backgroundColor: "#1A1024",
+
+    borderRadius: 30,
+
+    padding: 30,
+
+    marginBottom: 24,
   },
 
-  card: {
+  insightCard: {
 
     backgroundColor:
       "rgba(255,255,255,0.05)",
 
-    borderRadius: 28,
+    borderRadius: 30,
 
-    padding: 24,
-
-    marginBottom: 22,
-
-    borderWidth: 1,
-
-    borderColor:
-      "rgba(255,255,255,0.08)",
+    padding: 30,
   },
 
-  cardTitle: {
+  cardLabel: {
 
-    color: "#FF6F91",
+    color: "#B0B0B0",
 
-    fontSize: 22,
+    fontSize: 16,
 
-    fontWeight: "bold",
-
-    marginBottom: 16,
+    marginBottom: 12,
   },
 
-  cardText: {
+  streakText: {
 
     color: "#FFFFFF",
 
-    fontSize: 18,
-
-    lineHeight: 28,
-  },
-
-  aiCard: {
-
-    backgroundColor:
-      "rgba(255,255,255,0.05)",
-
-    borderRadius: 28,
-
-    padding: 24,
-
-    marginTop: 10,
-
-    borderWidth: 1,
-
-    borderColor:
-      "rgba(255,255,255,0.08)",
-  },
-
-  aiTitle: {
-
-    color: "#FF6F91",
-
-    fontSize: 24,
+    fontSize: 34,
 
     fontWeight: "bold",
-
-    marginBottom: 20,
   },
 
-  insightBubble: {
+  phaseText: {
 
-    backgroundColor:
-      "#1A1024",
+    color: "#FFFFFF",
 
-    padding: 18,
+    fontSize: 30,
 
-    borderRadius: 18,
-
-    marginBottom: 16,
+    fontWeight: "bold",
   },
 
   insightText: {
 
     color: "#FFFFFF",
 
-    fontSize: 16,
+    fontSize: 18,
 
-    lineHeight: 24,
-  },
-
-  scoreContainer: {
-
-    marginTop: 30,
-
-    backgroundColor:
-      "rgba(255,255,255,0.05)",
-
-    borderRadius: 28,
-
-    padding: 24,
-
-    borderWidth: 1,
-
-    borderColor:
-      "rgba(255,255,255,0.08)",
-  },
-
-  scoreTitle: {
-
-    color: "#FFFFFF",
-
-    fontSize: 24,
-
-    fontWeight: "bold",
-
-    marginBottom: 24,
-  },
-
-  scoreRow: {
-
-    flexDirection: "row",
-
-    justifyContent:
-      "space-around",
-  },
-
-  scoreItem: {
-
-    alignItems: "center",
-  },
-
-  scoreText: {
-
-    color: "#FFFFFF",
-
-    fontSize: 22,
-
-    fontWeight: "bold",
-  },
-
-  scoreLabel: {
-
-    color: "#B0B0B0",
-
-    marginTop: 14,
-
-    fontSize: 16,
-  },
-
-  chartCard: {
-
-    backgroundColor:
-      "rgba(255,255,255,0.05)",
-
-    borderRadius: 28,
-
-    padding: 20,
-
-    marginTop: 24,
-
-    borderWidth: 1,
-
-    borderColor:
-      "rgba(255,255,255,0.08)",
-  },
-
-  chartTitle: {
-
-    color: "#FFFFFF",
-
-    fontSize: 24,
-
-    fontWeight: "bold",
-
-    marginBottom: 10,
+    lineHeight: 30,
   },
 
 });

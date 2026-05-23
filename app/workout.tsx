@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -6,14 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-import {
-  Alert,
-} from "react-native";
-
-import {
-  router,
-} from "expo-router";
 
 import {
   useEffect,
@@ -25,6 +18,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   CountdownCircleTimer,
 } from "react-native-countdown-circle-timer";
+
+import {
+  router,
+} from "expo-router";
 
 import {
   workoutPlans,
@@ -112,38 +109,6 @@ export default function WorkoutScreen() {
             "userData"
           );
 
-          const today = new Date();
-
-        let phase = "";
-        let user = null;
-
-        if (savedUser) {
-
-          user = JSON.parse(savedUser);
-
-          const start = new Date(
-            user.cycleStartDate
-          );
-
-          const difference = Math.floor(
-            (today.getTime() - start.getTime()) /
-            (1000 * 60 * 60 * 24)
-          );
-
-          const cycleDay = (difference % 28) + 1;
-
-          if (cycleDay <= 5) {
-            phase = "Menstrual";
-          } else if (cycleDay <= 13) {
-            phase = "Follicular";
-          } else if (cycleDay <= 16) {
-            phase = "Ovulation";
-          } else {
-            phase = "Luteal";
-          }
-
-        }
-
         let selectedWorkout;
 
         if (!savedUser) {
@@ -155,6 +120,74 @@ export default function WorkoutScreen() {
         }
 
         else {
+
+          const user =
+            JSON.parse(savedUser);
+
+          const today =
+            new Date();
+
+          const start =
+            new Date(
+              user.cycleStartDate
+            );
+
+          const difference =
+            Math.floor(
+
+              (
+                today.getTime()
+                -
+                start.getTime()
+              )
+
+              /
+
+              (
+                1000 *
+                60 *
+                60 *
+                24
+              )
+
+            );
+
+          const cycleDay =
+            (difference % 28) + 1;
+
+          let phase = "";
+
+          if (cycleDay <= 5) {
+
+            phase =
+              "Menstrual";
+
+          }
+
+          else if (
+            cycleDay <= 13
+          ) {
+
+            phase =
+              "Follicular";
+
+          }
+
+          else if (
+            cycleDay <= 16
+          ) {
+
+            phase =
+              "Ovulation";
+
+          }
+
+          else {
+
+            phase =
+              "Luteal";
+
+          }
 
           if (
             phase ===
@@ -178,7 +211,8 @@ export default function WorkoutScreen() {
             ) {
 
               selectedWorkout =
-                workoutPlans.follicular
+                workoutPlans
+                  .follicular
                   .upperBody;
 
             }
@@ -186,7 +220,8 @@ export default function WorkoutScreen() {
             else {
 
               selectedWorkout =
-                workoutPlans.follicular
+                workoutPlans
+                  .follicular
                   .lowerBody;
 
             }
@@ -220,11 +255,14 @@ export default function WorkoutScreen() {
 
         const combined = [
 
-          ...selectedWorkout.warmup,
+          ...selectedWorkout
+            .warmup,
 
-          ...selectedWorkout.mainWorkout,
+          ...selectedWorkout
+            .mainWorkout,
 
-          ...selectedWorkout.cooldown,
+          ...selectedWorkout
+            .cooldown,
 
         ];
 
@@ -329,15 +367,21 @@ export default function WorkoutScreen() {
           {current.name}
         </Text>
 
-        {exerciseImages[current.name] && (
+        {exerciseImages[
+          current.name
+        ] && (
 
           <Image
 
             source={
-              exerciseImages[current.name]
+              exerciseImages[
+                current.name
+              ]
             }
 
-            style={styles.exerciseImage}
+            style={
+              styles.exerciseImage
+            }
 
             resizeMode="contain"
           />
@@ -346,7 +390,11 @@ export default function WorkoutScreen() {
 
         {current.sets && (
 
-          <Text style={styles.exerciseInfo}>
+          <Text
+            style={
+              styles.exerciseInfo
+            }
+          >
             {current.sets}
             {" sets × "}
             {current.reps}
@@ -356,7 +404,11 @@ export default function WorkoutScreen() {
 
         {current.duration && (
 
-          <Text style={styles.exerciseInfo}>
+          <Text
+            style={
+              styles.exerciseInfo
+            }
+          >
             Duration:
             {" "}
             {current.duration}
@@ -366,7 +418,11 @@ export default function WorkoutScreen() {
 
         {current.rest && (
 
-          <Text style={styles.exerciseInfo}>
+          <Text
+            style={
+              styles.exerciseInfo
+            }
+          >
             Rest:
             {" "}
             {current.rest}
@@ -376,7 +432,11 @@ export default function WorkoutScreen() {
 
         {current.muscles && (
 
-          <Text style={styles.exerciseInfo}>
+          <Text
+            style={
+              styles.exerciseInfo
+            }
+          >
             Target:
             {" "}
             {current.muscles}
@@ -387,7 +447,9 @@ export default function WorkoutScreen() {
         {current.instructions && (
 
           <Text
-            style={styles.instructions}
+            style={
+              styles.instructions
+            }
           >
             {current.instructions}
           </Text>
@@ -400,54 +462,82 @@ export default function WorkoutScreen() {
 
         style={styles.nextButton}
 
-        onPress={() => {
+        onPress={async () => {
 
-  if (
-    exerciseIndex <
-    allExercises.length - 1
-  ) {
+          if (
 
-    setExerciseIndex(
-      exerciseIndex + 1
-    );
+            exerciseIndex <
 
-  }
+            allExercises.length - 1
 
-  else {
+          ) {
 
-    Alert.alert(
-
-      "Workout Complete 🎉",
-
-      "Congratulations on completing today's workout!",
-
-      [
-
-        {
-
-          text: "View Progress",
-
-          onPress: () => {
-
-            router.replace(
-              "/(tabs)/progress"
+            setExerciseIndex(
+              exerciseIndex + 1
             );
 
-          },
+          }
 
-        },
+          else {
 
-      ]
+            const currentStreak =
+              await AsyncStorage.getItem(
+                "streak"
+              );
 
-    );
+            const streakNumber =
+              currentStreak
+                ? parseInt(
+                    currentStreak
+                  )
+                : 0;
 
-  }
+            await AsyncStorage.setItem(
 
-}}
+              "streak",
+
+              String(
+                streakNumber + 1
+              )
+
+            );
+
+            Alert.alert(
+
+              "Workout Complete 🎉",
+
+              "Congratulations on completing today's workout!",
+
+              [
+
+                {
+
+                  text:
+                    "View Progress",
+
+                  onPress: () => {
+
+                    router.replace(
+                      "/(tabs)/progress"
+                    );
+
+                  },
+
+                },
+
+              ]
+
+            );
+
+          }
+
+        }}
       >
 
         <Text
-          style={styles.nextButtonText}
+          style={
+            styles.nextButtonText
+          }
         >
           Next Exercise →
         </Text>
