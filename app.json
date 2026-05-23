@@ -1,0 +1,109 @@
+{
+  "expo": {
+
+    "name": "BloomBalance",
+
+    "slug": "BloomBalance",
+
+    "version": "1.0.0",
+
+    "orientation": "portrait",
+
+    "scheme": "bloombalance",
+
+    "userInterfaceStyle": "automatic",
+
+    "newArchEnabled": true,
+
+    "icon":
+      "./assets/images/BloomBalancelogo.jpg",
+
+    "splash": {
+
+      "image":
+        "./assets/images/BloomBalancelogo.jpg",
+
+      "resizeMode": "contain",
+
+      "backgroundColor": "#050505"
+    },
+
+    "ios": {
+
+      "supportsTablet": true
+    },
+
+    "android": {
+
+      "package":
+        "com.tasmai.bloombalance",
+
+      "edgeToEdgeEnabled": true,
+
+      "predictiveBackGestureEnabled": false,
+
+      "adaptiveIcon": {
+
+        "foregroundImage":
+          "./assets/images/BloomBalancelogo.jpg",
+
+        "backgroundColor":
+          "#050505"
+      }
+
+    },
+
+    "web": {
+
+      "output": "static",
+
+      "favicon":
+        "./assets/images/BloomBalancelogo.jpg"
+    },
+
+    "plugins": [
+
+      "expo-router",
+
+      [
+        "expo-splash-screen",
+
+        {
+
+          "image":
+            "./assets/images/BloomBalancelogo.jpg",
+
+          "imageWidth": 220,
+
+          "resizeMode": "contain",
+
+          "backgroundColor": "#050505"
+        }
+
+      ],
+
+      "@react-native-community/datetimepicker"
+
+    ],
+
+    "experiments": {
+
+      "typedRoutes": true,
+
+      "reactCompiler": true
+    },
+
+    "extra": {
+
+      "router": {},
+
+      "eas": {
+
+        "projectId":
+          "61276b86-3bf5-443d-aeca-38bc55e71222"
+      }
+
+    }
+
+  }
+}
